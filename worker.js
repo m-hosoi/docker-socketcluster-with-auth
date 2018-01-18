@@ -38,21 +38,31 @@ class Worker extends SCWorker {
       // Some sample logic to show how to handle client events,
       // replace this with your own logic
 
-      socket.on('sampleClientEvent', function (data) {
-        count++;
-        console.log('Handled sampleClientEvent', data);
-        scServer.exchange.publish('sample', count);
-      });
+      // socket.on('sampleClientEvent', function (data) {
+        // count++;
+        // console.log('Handled sampleClientEvent', data);
+        // scServer.exchange.publish('sample', count);
+      // });
 
-      var interval = setInterval(function () {
-        socket.emit('rand', {
-          rand: Math.floor(Math.random() * 5)
-        });
-      }, 1000);
+      // var interval = setInterval(function () {
+        // socket.emit('rand', {
+          // rand: Math.floor(Math.random() * 5)
+        // });
+      // }, 1000);
 
-      socket.on('disconnect', function () {
-        clearInterval(interval);
-      });
+      // socket.on('disconnect', function () {
+        // clearInterval(interval);
+      // });
+    });
+
+
+    scServer.addMiddleware(scServer.MIDDLEWARE_PUBLISH_IN, function (req, next) {
+      var authToken = req.socket.authToken;
+      if (authToken) {
+        next();
+      } else {
+        next('You are not authorized');
+      }
     });
   }
 }
